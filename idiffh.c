@@ -40,6 +40,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdarg.h>
+#ifdef FGETLN
+#include <bsd/stdio.h>
+#endif
 
 typedef int CompareFunc_t(const char *s1, const char * s2);
 typedef CompareFunc_t *PtrCompareFunc_t;
