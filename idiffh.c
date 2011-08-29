@@ -3,25 +3,6 @@
 
 
 /*
- * idiffh [-b|-w] [-zNumber] file1 file2
- * -b = ignore differences in amount of white space when comparing lines
- * -w = ignore all white space when comparing lines
- * -zNUmber = set the lookahead limit to Number (defaults to 100 lines). 100=<Number=<1000
- * (The -z is more for development, but the odd user may find it helpful.)
- * If one looks at the GNU diff documentation, there isn't a very formal definition for
- * -b and -w, so you may see some behaviour that differs a little from diff.
- * I'm simply not sure which is correct. Treat them as a help, when needed, not a necessity.
- *
- * idiffh is a diffh that may be useful for enormous text files and, perhaps, few differences.
- * i.e. files that, e.g., GNU diff cannot cope with. Note that you are just lucky if you get minimal
- * differences; the simple heuristics used do not guarantee such -- the price you pay for being
- * able to compare enormous files of any length.
- *
- * There are no arbitrary limits, such as a maximum line length or file size, but there is a necessary limit
- * on the "diff size" i.e. the amount of lines to readahead (to play with it: supply as -zNumber).
- * The 'best' value for the readahead bound depends on the input files. It defaults to 100 lines, which
- * should be reasonable in many cases. Text files are assumed.
- *
  * Written to the C99 standard; there should not be anything UNIX specific. But, if you -DUNIX when you compile,
  * it will catch SIGINT and delete the temporary files. I have tried a previous version on
  * Windows (mingw and lcc compilers), Linux (gcc) and Mac OS X (gcc, icc) where it was developed.
@@ -82,6 +63,26 @@ static char cfile2tempname[L_tmpnam];
 
 /* Usage */
 static const char *usage = "usage: idiffh [-b|-w] [-zNumber] file1 file2";
+static const char *usage1 =
+  "usage: idiffh [-b|-w] [-zNumber] file1 file2\n"
+  "options:\n"
+  "-b = ignore differences in amount of white space when comparing lines\n"
+  "-w = ignore all white space when comparing lines\n"
+  "-zNUmber = set the lookahead limit to Number (defaults to 100 lines).  100=<Number=<1000\n"
+  "(The -z is more for development, but the odd user may find it helpful.)\n"
+  "If one looks at the GNU diff documentation, there isn't a very formal definition for\n"
+  "-b and -w, so you may see some behaviour that differs a little from diff.\n"
+  "I'm simply not sure which is correct.  Treat them as a help, when needed, not a necessity.\n"
+  "\n"
+  "idiffh is a diffh that may be useful for enormous text files and, perhaps, few differences.\n"
+  "i.e., files that, e.g., GNU diff cannot cope with.  Note that you are just lucky if you get minimal\n"
+  "differences; the simple heuristics used do not guarantee such -- the price you pay for being\n"
+  "able to compare enormous files of any length.\n"
+  "\n"
+  "There are no arbitrary limits, such as a maximum line length or file size, but there is a necessary limit\n"
+  "on the \"diff size\", i.e., the amount of lines to readahead (to play with it: supply as -zNumber).\n"
+  "The 'best' value for the readahead bound depends on the input files.  It defaults to 100 lines, which\n"
+  "should be reasonable in many cases. Text files are assumed.\n";
 
 /* UNIX like systems can clean up temp files on control-c */
 #ifdef UNIX
@@ -110,7 +111,7 @@ int main(int argc, char **argv)
   errno= 0;
   { /* Process arguments */
     int i;
-    exception(argc < 3, usage);
+    exception(argc < 3, usage1);
     for (i= 1; i != argc; ++i) {
       if (argv[i][0] == '-') {
 	/* handle optional switches */
