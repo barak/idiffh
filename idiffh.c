@@ -3,15 +3,20 @@
 
 
 /*
- * Written to the C99 standard; there should not be anything UNIX specific. But, if you -DUNIX when you compile,
- * it will catch SIGINT and delete the temporary files. I have tried a previous version on
- * Windows (mingw and lcc compilers), Linux (gcc) and Mac OS X (gcc, icc) where it was developed.
- * See below for Windows caveat.
+ * Written to the C99 standard; there should not be anything UNIX
+ * specific. But, if you -DUNIX when you compile, it will catch SIGINT
+ * and delete the temporary files. I have tried a previous version on
+ * Windows (mingw and lcc compilers), Linux (gcc) and Mac OS X (gcc,
+ * icc) where it was developed. See below for Windows caveat.
  *
- * If you are stuck with an older C compiler or run-time library, there are two things that may need changing:
- * a) "%zu" formats may not be supported, change to "%lu" or "%llu" and cast the size_t values; and
- * b) declarations and statements are mixed up (like C++), create extra blocks { ... } or move the declarations.
- * The first of these is likely with any Windows-based compiler (for some reason); the second is likely to be OK.
+ * If you are stuck with an older C compiler or run-time library,
+ * there are two things that may need changing:
+ * (a) "%zu" formats may not be supported, change to "%lu" or "%llu"
+ *     and cast the size_t values; and
+ * (b) declarations and statements are mixed up (like C++), create
+ *     extra blocks { ... } or move the declarations.
+ * The first of these is likely with any Windows-based compiler (for
+ * some reason); the second is likely to be OK.
  *
  */
 
@@ -34,11 +39,17 @@ static int  wcompare(const char *s1, const char * s2);
 static int  bcompare(const char *s1, const char * s2);
 static char *fgetline(FILE*);
 static void exception(int failure, const char *fmt, ...);
-static int  checkinsertdelete(const size_t bound, char *line1, char *line2, FILE *filen, char *direction, size_t *count, FILE *filem);
-static void printtempfile(char *ed, size_t count1, size_t count2, size_t f2count1, size_t f2count2);
+static int  checkinsertdelete(const size_t bound, char *line1, char *line2,
+			      FILE *filen, char *direction, size_t *count,
+			      FILE *filem);
+static void printtempfile(char *ed, size_t count1, size_t count2,
+			  size_t f2count1, size_t f2count2);
 static int  synconnextline(FILE *file1, FILE *file2);
-static void handlechangeline(size_t lcount, size_t f2lcount, char *line1, char *line2);
-static void outputremainder(FILE *file1, FILE *file2, char *line1, char *line2, size_t savedlcount, size_t lcount, size_t savedf2lcount, size_t f2lcount);
+static void handlechangeline(size_t lcount, size_t f2lcount,
+			     char *line1, char *line2);
+static void outputremainder(FILE *file1, FILE *file2, char *line1, char *line2,
+			    size_t savedlcount, size_t lcount,
+			    size_t savedf2lcount, size_t f2lcount);
 
 /* flags */
 static int bflag= 0;    /* -b */
@@ -68,21 +79,26 @@ static const char *usage1 =
   "options:\n"
   "-b = ignore differences in amount of white space when comparing lines\n"
   "-w = ignore all white space when comparing lines\n"
-  "-zNUmber = set the lookahead limit to Number (defaults to 100 lines).  100=<Number=<1000\n"
+  "-zNUmber = set the lookahead limit to Number (defaults to 100 lines).\n"
+  "           100=<Number=<1000\n"
   "(The -z is more for development, but the odd user may find it helpful.)\n"
-  "If one looks at the GNU diff documentation, there isn't a very formal definition for\n"
-  "-b and -w, so you may see some behaviour that differs a little from diff.\n"
-  "I'm simply not sure which is correct.  Treat them as a help, when needed, not a necessity.\n"
+  "If one looks at the GNU diff documentation, there isn't a very formal\n"
+  "definition for -b and -w, so you may see some behaviour that differs a\n"
+  "little from diff. I'm simply not sure which is correct. Treat them as a\n"
+  "help, when needed, not a necessity.\n"
   "\n"
-  "idiffh is a diffh that may be useful for enormous text files and, perhaps, few differences.\n"
-  "i.e., files that, e.g., GNU diff cannot cope with.  Note that you are just lucky if you get minimal\n"
-  "differences; the simple heuristics used do not guarantee such -- the price you pay for being\n"
-  "able to compare enormous files of any length.\n"
+  "idiffh is a diffh that may be useful for enormous text files and,\n"
+  "perhaps, few differences. I.e., files that, e.g., GNU diff cannot cope\n"
+  "with. Note that you are just lucky if you get minimal differences; the\n"
+  "simple heuristics used do not guarantee such -- the price you pay for\n"
+  "being able to compare enormous files of any length.\n"
   "\n"
-  "There are no arbitrary limits, such as a maximum line length or file size, but there is a necessary limit\n"
-  "on the \"diff size\", i.e., the amount of lines to readahead (to play with it: supply as -zNumber).\n"
-  "The 'best' value for the readahead bound depends on the input files.  It defaults to 100 lines, which\n"
-  "should be reasonable in many cases. Text files are assumed.\n";
+  "There are no arbitrary limits, such as a maximum line length or file\n"
+  "size, but there is a necessary limit on the \"diff size\", i.e., the\n"
+  "amount of lines to readahead (to play with it: supply as -zNumber).\n"
+  "The 'best' value for the readahead bound depends on the input files. It\n"
+  "defaults to 100 lines, which should be reasonable in many cases. Text\n"
+  "files are assumed.\n";
 
 /* UNIX like systems can clean up temp files on control-c */
 #ifdef UNIX
@@ -99,14 +115,14 @@ static void catchint(int signum) { remove(filetempname1); remove(cfile1tempname)
 
 int main(int argc, char **argv)
 {
-  size_t savedlcount= 0;                     /* for restoring lcount if we backtrack */
-  size_t savedf2lcount= 0;                   /* for restoring f2lcount if we backtrack */
-  char *line1, *line2;                       /* current lines from file1 and file2 */
-  fpos_t backtrackpoint;                     /* file1 or file2 point to backtrack to */
-  int rv= 0;                                 /* 0 OK and no diffs, 1 OK and diffs, 2 trouble */
-  int ex;                                    /* for checking return codes */
-  unsigned int bounded= 100;                 /* bound for readahead - may be supplied via -zNumber */
-  unsigned int f1= 0, f2= 0;                 /* argv[f1] is first filename, argv[f2] is second */
+  size_t savedlcount= 0;	/* for restoring lcount if we backtrack */
+  size_t savedf2lcount= 0;	/* for restoring f2lcount if we backtrack */
+  char *line1, *line2;		/* current lines from file1 and file2 */
+  fpos_t backtrackpoint;	/* file1 or file2 point to backtrack to */
+  int rv= 0;			/* 0 OK and no diffs, 1 OK and diffs, 2 trouble */
+  int ex;			/* for checking return codes */
+  unsigned int bounded= 100;	/* bound for readahead - may be supplied via -zNumber */
+  unsigned int f1= 0, f2= 0;	/* argv[f1] is first filename, argv[f2] is second */
 
   errno= 0;
   { /* Process arguments */
@@ -117,7 +133,7 @@ int main(int argc, char **argv)
 	/* handle optional switches */
 	switch (argv[i][1]) {
 	default:
-	  exception(1, usage); 
+	  exception(1, usage);
 	  break;
 	case 0:
 	  exception(1, "sorry, standard input can't be used because we need random file access");
@@ -133,11 +149,17 @@ int main(int argc, char **argv)
 	  comparefunction= wcompare;
 	  break;
 	case 'z': {
-	  unsigned int j; char *limit= &argv[i][2]; unsigned int len= strlen(limit);
-	  for (j= 0; j != len; ++j) exception(!isdigit(limit[j]), "non digit supplied in -zNumber: %s", argv[i]);
+	  unsigned int j;
+	  char *limit= &argv[i][2];
+	  unsigned int len= strlen(limit);
+	  for (j= 0; j != len; ++j)
+	    exception(!isdigit(limit[j]),
+		      "non digit supplied in -zNumber: %s",
+		      argv[i]);
 	  ex= sscanf(limit, "%u", &bounded);
 	  exception(ex == EOF, usage);
-	  exception(bounded < 100 || bounded > 1000, "limit to readahead supplied with -zNumber cannot be <100 or >1000");
+	  exception(bounded < 100 || bounded > 1000,
+		    "limit to readahead supplied with -zNumber cannot be <100 or >1000");
 	  break;
 	 }
 	}
@@ -435,11 +457,12 @@ static int bcompare(const char *s1, const char * s2)
  *  not a wonderful interface, but it mimics fgets().
  *  Caller should free memory.
  */
+
 #ifdef FGETLN
 /* May well be the case that only BSD based systems (including Mac OS X) have fgetln() */
 
 static char *fgetline(FILE *f)
-{ 
+{
   size_t len;
   char *line= fgetln(f, &len);
   if (line == 0) return 0;
@@ -449,8 +472,6 @@ static char *fgetline(FILE *f)
   buf[len]= '\0';
   return buf;
 }
-
-
 #endif
 
 #ifndef FGETLN
@@ -478,4 +499,3 @@ static char *fgetline(FILE *f)
   return buffer;
 }
 #endif
-
