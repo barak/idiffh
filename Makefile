@@ -1,4 +1,5 @@
 all: idiffh
+all: separate
 
 CFLAGS+=-O2
 CFLAGS+=-Wall -pedantic
