@@ -7,27 +7,21 @@ int x = 0;
 while (x < 2){
  		 
 	FILE *original;
-	FILE *rules;
 	FILE *words;
 	 char ch ;
-	char* s1;
 	original = fopen(argv[x+1], "r"); 
         if(x == 0){
 		words = fopen("/home/user/words3", "w");
-		rules = fopen("/home/user/rules3", "w");
-		s1 = "File A";
 	}
 	else{
 		words = fopen("/home/user/words4", "w");
-		rules = fopen("/home/user/rules4", "w");
-		s1 = "File B";
+		
+		
 	}
 fseek(original, 0, SEEK_END); // seek to end of file
 int size = ftell(original); // get current file pointer
 fseek(original, 0, SEEK_SET);
 char temp;
-int count = 0;
-int count1 = 0;
 int i = 0;
 		
 	//need to add extra loop for the amount of files.
@@ -50,30 +44,38 @@ int i = 0;
 				fputs("%13", words);
 				fputc('\n', words);
 				
-				count = count +1;
+			}
+			else if(!(isalpha(temp)) && ch == '\n'){
+				fputs(": ", words);
+				fputs("%13", words);
+				fputc('\n', words);
+				
 			}
 			else if(temp == ' ' && ch == '\n'){
 				fputs("%13", words);
 				fputc('\n', words);
-				count = count + 1;
+				
 			}
 			else if(ch == '\n'){
 				fputs(": ", words);
 				fputs("%13", words);
 				fputc('\n', words);
-				count = count + 1;
+				
 			}
 			else if(temp == '\n' && isalpha(ch)){
 				fputc(ch, words);
 			}
+			else if(temp == '\n' && (!isalpha(ch))){
+				fputc(ch, words);
+			}
 	               else if(temp == ' ' && (isalpha(ch))){
-	            	 	   fputc('\n', words);
-	            		   fputc(ch, words);
+	            	 	fputc('\n', words);
+	            		fputc(ch, words);
 	               }
 			
-			 else if((!(isalpha(temp))) && (isalpha(ch))){
-			fputc ('\n', words);
-			fputc (ch, words);
+		       else if((!(isalpha(temp))) && (isalpha(ch))){
+				fputc ('\n', words);
+				fputc (ch, words);
  		       }
 	               else if(isalpha(ch)){
 	            		fputc(ch, words);
@@ -103,6 +105,11 @@ int i = 0;
 			fputc ( ch, words );
 	            	 
  		       }
+		       else if(!(isalpha(temp)) && (!(isalpha(ch)))){
+			fputc ('\n', words);
+			fputc ( ch, words );
+	            	 
+ 		       }
 			
                        else{
 	            	   fputc ( ch, words );
@@ -116,7 +123,6 @@ int i = 0;
 
 	        fclose ( original ) ;
             fclose(words);
-		fclose(rules);
 		x++;
 		}
 }

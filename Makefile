@@ -17,8 +17,10 @@ bindir=$(prefix)/bin
 install: all
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) idiffh $(DESTDIR)$(bindir)/
+	$(INSTALL_PROGRAM) separate $(DESTDIR)$(bindir)/
 
 clean:
 	rm -f idiffh
+	rm -f separate
 
 .PHONY: all install clean
