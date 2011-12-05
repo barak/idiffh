@@ -123,7 +123,7 @@ int main(int argc, char **argv)
   int ex;			/* for checking return codes */
   unsigned int bounded= 100;	/* bound for readahead - may be supplied via -zNumber */
   unsigned int f1= 0, f2= 0;	/* argv[f1] is first filename, argv[f2] is second */
-
+ 
   errno= 0;
   { /* Process arguments */
     int i;
@@ -186,12 +186,43 @@ int main(int argc, char **argv)
   /* print any line diffs until one or both files exhausted */
   while (line1= fgetline(file1), line2= fgetline(file2), (line1 != 0 && line2 != 0)) { /* main loop */
     ++lcount, ++f2lcount;
-
+	for(int i = 0; i<= strlen(line1); i++){
+		char c = line1[i];
+		if(c == ':'){
+			line1[i] = '\n';
+			line1[i+1] = '\0';
+			break;
+		}
+	}
+	for(int i = 0; i<= strlen(line2); i++){
+		char c = line2[i];
+		if(c == ':'){
+			line2[i] = '\n';
+			line2[i+1] = '\0';
+			break;	
+		}
+	}
     if ((*comparefunction)(line1, line2) != 0) { /* i.e. the lines differ */
       rv= 1;
       /* remember file2 position before we check for insert */
       savedf2lcount= f2lcount;
       ex= fgetpos(file2, &backtrackpoint);     exception(ex != 0, "failed to set backtrack position in %s", argv[f2]);
+	for(int i = 0; i<= strlen(line1); i++){
+		char c = line1[i];
+		if(c == '\n'){
+			line1[i] = ':';
+			line1[i+1] = ' ';
+			break;
+		}
+	}
+	for(int i = 0; i<= strlen(line2); i++){
+		char c = line2[i];
+		if(c == '\n'){
+			line2[i] = ':';
+			line2[i+1] = ' ';
+			break;
+		}
+	}
       if (checkinsertdelete(bounded, line1, line2, file2, ">", &f2lcount, file1))
          printtempfile("a", lcount-1, lcount-1, savedf2lcount, f2lcount-1);
       else {

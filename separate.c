@@ -13,12 +13,12 @@ while (x < 2){
 	char* s1;
 	original = fopen(argv[x+1], "r"); 
         if(x == 0){
-		words = fopen("/home/user/words1", "w");
+		words = fopen("/home/user/words3", "w");
 		rules = fopen("/home/user/rules3", "w");
 		s1 = "File A";
 	}
 	else{
-		words = fopen("/home/user/words", "w");
+		words = fopen("/home/user/words4", "w");
 		rules = fopen("/home/user/rules4", "w");
 		s1 = "File B";
 	}
@@ -53,8 +53,8 @@ int i = 0;
 				count = count +1;
 			}
 			else if(temp == ' ' && ch == '\n'){
-				fputs("%13", rules);
-				fputc('\n', rules);
+				fputs("%13", words);
+				fputc('\n', words);
 				count = count + 1;
 			}
 			else if(ch == '\n'){
@@ -105,11 +105,8 @@ int i = 0;
  		       }
 			
                        else{
-			fputc ('\n', words );
 	            	   fputc ( ch, words );
-	            	   
-			   
-                	}
+	               }
 
 	        temp = ch;
 		i++;
