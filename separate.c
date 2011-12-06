@@ -4,7 +4,7 @@
 
 main(int argc, char *argv[]) {
 int x = 0;
-while (x < 2){
+while (x < 3){
  		 
 	FILE *original;
 	FILE *words;
@@ -13,10 +13,11 @@ while (x < 2){
         if(x == 0){
 		words = fopen("/home/user/words3", "w");
 	}
-	else{
+	if(x == 1){
 		words = fopen("/home/user/words4", "w");
-		
-		
+	}
+	if(x == 2){	
+		words = fopen("/home/user/words5", "w");
 	}
 fseek(original, 0, SEEK_END); // seek to end of file
 int size = ftell(original); // get current file pointer
