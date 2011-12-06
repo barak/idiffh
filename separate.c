@@ -70,11 +70,13 @@ int i = 0;
 				fputc(ch, words);
 			}
 	               else if(temp == ' ' && (isalpha(ch))){
+              
 	            	 	fputc('\n', words);
 	            		fputc(ch, words);
 	               }
 			
 		       else if((!(isalpha(temp))) && (isalpha(ch))){
+				fputs(": ", words);
 				fputc ('\n', words);
 				fputc (ch, words);
  		       }
@@ -102,11 +104,13 @@ int i = 0;
 		       }
 		      
 		       else if((isalpha(temp)) && (!(isalpha(ch)))){
+			fputs(": ", words);
 			fputc ('\n', words);
 			fputc ( ch, words );
 	            	 
  		       }
 		       else if(!(isalpha(temp)) && (!(isalpha(ch)))){
+			fputs(": ", words);			
 			fputc ('\n', words);
 			fputc ( ch, words );
 	            	 
