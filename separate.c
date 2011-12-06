@@ -26,11 +26,18 @@
 // Note: compile with -DNDEBUG to turn off debugging chatter.
 
 void
-usage()
+usage ()
 {
-  fprintf(stderr, "Tokenize stdin, stdout is one token/line, whitespace encoded.\n");
-  fprintf(stderr, "Usage: separate < file-to-tokenize > token-file\n");
-  fprintf(stderr, "Example: (echo a man, a; echo plan)|separate\n");
+  fprintf (stderr,
+	   "Tokenize stdin, stdout is one token/line, whitespace encoded.\n");
+  fprintf (stderr, "Usage: separate < file-to-tokenize > token-file\n");
+  fprintf (stderr, "Example: (echo a man, a; echo plan)|separate\n");
+}
+
+inline int
+putss (char *s)
+{
+  return fputs (s, stdout);
 }
 
 
@@ -39,8 +46,8 @@ main (int argc, char *argv[])
 {
   if (argc != 1)
     {
-      usage();
-      exit(1);
+      usage ();
+      exit (1);
     }
 
   char temp;
@@ -54,8 +61,8 @@ main (int argc, char *argv[])
 #endif
       if (ch == '\t' && (isalpha (temp)))
 	{
-	  puts (": ");
-	  puts ("%9");
+	  putss (": ");
+	  putss ("%9");
 	}
       else if (i == 0 && (isalpha (ch)))
 	{
@@ -63,28 +70,28 @@ main (int argc, char *argv[])
 	}
       else if ((isalpha (temp)) && ch == '\n')
 	{
-	  puts (": ");
-	  puts ("%13");
+	  putss (": ");
+	  putss ("%13");
 	  putchar ('\n');
 
 	}
       else if (!(isalpha (temp)) && ch == '\n')
 	{
-	  puts (": ");
-	  puts ("%13");
+	  putss (": ");
+	  putss ("%13");
 	  putchar ('\n');
 
 	}
       else if (temp == ' ' && ch == '\n')
 	{
-	  puts ("%13");
+	  putss ("%13");
 	  putchar ('\n');
 
 	}
       else if (ch == '\n')
 	{
-	  puts (": ");
-	  puts ("%13");
+	  putss (": ");
+	  putss ("%13");
 	  putchar ('\n');
 
 	}
@@ -114,18 +121,18 @@ main (int argc, char *argv[])
 
       else if ((isalpha (temp)) && ch == ' ')
 	{
-	  puts (": ");
-	  puts ("%32");
+	  putss (": ");
+	  putss ("%32");
 
 	}
       else if ((!(isalpha (temp))) && temp != ' ' && ch == ' ')
 	{
-	  puts (": ");
-	  puts ("%32");
+	  putss (": ");
+	  putss ("%32");
 	}
       else if (ch == ' ')
 	{
-	  puts ("%32");
+	  putss ("%32");
 	}
       else if ((!(isalpha (ch))) && temp == ' ')
 	{
