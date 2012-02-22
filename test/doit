@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+set -v
+
+
+for f in a a1 a2; do
+    ../separate <$f >$f.tok
+done
+
+../idiffh a.tok a1.tok > a1.patch || true
+../idiffh a.tok a2.tok > a2.patch || true
+../patch-2.6/src/patch a2.tok -i a1.patch -o a12.tok
+../rebuild < a12.tok > a12
