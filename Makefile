@@ -1,5 +1,6 @@
 all: idiffh
 all: separate
+all: rebuild
 
 CFLAGS+=-O2
 CFLAGS+=-Wall -pedantic
@@ -18,9 +19,11 @@ install: all
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) idiffh $(DESTDIR)$(bindir)/
 	$(INSTALL_PROGRAM) separate $(DESTDIR)$(bindir)/
+	$(INSTALL_PROGRAM) rebuild $(DESTDIR)$(bindir)/
 
 clean:
 	rm -f idiffh
 	rm -f separate
+	rm -f rebuild
 
 .PHONY: all install clean
