@@ -9,6 +9,5 @@ for f in a a1 a2; do
 done
 
 ../idiffh a.tok a1.tok > a1.patch || true
-../idiffh a.tok a2.tok > a2.patch || true
 patch -l a2.tok -i a1.patch -o a12.tok
 ../rebuild < a12.tok > a12

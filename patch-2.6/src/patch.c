@@ -1478,7 +1478,7 @@ patch_match (LINENUM base, LINENUM offset,
 	
     }
 	
-	regfree(&regex);
+	
     return true;
 }
 
@@ -1488,14 +1488,68 @@ bool
 similar (register char const *a, register size_t alen,
 	 register char const *b, register size_t blen)
 {
-	
+ /* regex_t regex;
+  int reti;
+  int count = 1;
+  int count1 = 1;
+  char msgbuf[100];
+  regmatch_t pmatch[5];
+  int i = 0;
+ puts(a);
+   reti = regcomp(&regex, "(#)*", REG_EXTENDED); 
+        if( reti ){ fprintf(stderr, "Could not compile regex\n"); exit(1); }
+  
+	 reti = regexec(&regex, a, 5, pmatch, 0);
+	regfree(&regex);
+        if( !reti ){
+		for(i=0;i<6;i++){
+              printf("%d",pmatch[i].rm_so);
+	       printf("%s",("//"));
+		}
+        }
+        else if( reti == REG_NOMATCH ){
+                puts("no match");
+        }
+        else{
+                regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+                fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+                exit(1);
+        }*/
   /* Ignore presence or absence of trailing newlines.  */
   alen  -=  alen && a[alen - 1] == '\n';
   blen  -=  blen && b[blen - 1] == '\n';
+	 
 
-  
 
-  for (;;)
+   for (;;)
+    {
+ 
+	if (!blen || (*b == ':'))
+	   {
+	   
+            do b++, blen--;
+	    while(blen && (*b != '\n'));
+	     
+	    if (alen)
+		{
+	      	  if (!(*a == ':'))			
+		    return false;		   			
+	      	  do a++, alen--;
+	      	  while (alen && (*a != '\n'));
+	        }
+	    if (!alen || !blen)		
+	      return alen == blen;
+	  }
+      
+      else if (!alen || *a++ != *b++)	  
+	return false;
+		
+      else
+	alen--, blen--;
+	
+    }
+
+ /* for (;;)
     {
       if (!blen || (*b == ' ' || *b == '\t'))
 	{
@@ -1515,7 +1569,8 @@ similar (register char const *a, register size_t alen,
 	return false;
       else
 	alen--, blen--;
-    }
+    }*/
+
 }
 
 /* Make a temporary file.  */

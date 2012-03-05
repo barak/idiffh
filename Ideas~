@@ -44,44 +44,8 @@ putchar(*a);
 	regfree(&regex);
   *a = *replacement;
 
-regex_t regex;
-  int reti;
-  char msgbuf[100];
-  regmatch_t pmatch[10];
 
 
-   reti = regcomp(&regex, ": [%0-9]*", 0);
-        if( reti ){ fprintf(stderr, "Could not compile regex\n"); exit(1); }
-	
-	reti = regexec(&regex, b, 0, NULL, 0);
-   for (;;)
-    {
-      if (!blen || !reti )
-	{
-	 for(i = 1; i < 10; i++){
-	    
-	  if (b[(pmatch[i])]; == ':')
-	    {
-		for(;;)
-		   {
-			b++;
-			blen--;
-			if(b == '\n'){
-				break;
-			}
-	      if (!(*a == ' ' || *a == '\t'))
-		return false;
-	      do a++, alen--;
-	      while (alen && (*a == ' ' || *a == '\t'));
-	    }
-	  if (!alen || !blen)
-	    return alen == blen;
-	}
-      else if (!alen || *a++ != *b++)
-	return false;
-      else
-	alen--, blen--;
-    }
 
 
  regex_t regex;
