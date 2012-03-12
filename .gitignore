@@ -1,4 +1,9 @@
 *.o
+*.patch
+*.tok
 /Seperate
 /idiffh
+/rebuild
 /separate
+/test/a12
+/test/b12
