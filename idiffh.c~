@@ -207,7 +207,22 @@ int main(int argc, char **argv)
       /* remember file2 position before we check for insert */
       savedf2lcount= f2lcount;
       ex= fgetpos(file2, &backtrackpoint);     exception(ex != 0, "failed to set backtrack position in %s", argv[f2]);
-	
+	for(int i = 0; i<= strlen(line1); i++){
+		char c = line1[i];
+		if(c == '\n'){
+			line1[i] = ':';
+			line1[i+1] = ' ';
+			break;
+		}
+	}
+	for(int i = 0; i<= strlen(line2); i++){
+		char c = line2[i];
+		if(c == '\n'){
+			line2[i] = ':';
+			line2[i+1] = ' ';
+			break;
+		}
+	}
       if (checkinsertdelete(bounded, line1, line2, file2, ">", &f2lcount, file1))
          printtempfile("a", lcount-1, lcount-1, savedf2lcount, f2lcount-1);
       else {
@@ -228,22 +243,6 @@ int main(int argc, char **argv)
 	}
       }
     }
-for(int i = 0; i<= strlen(line1); i++){
-		char c = line1[i];
-		if(c == '\n'){
-			line1[i] = ':';
-			line1[i+1] = ' ';
-			break;
-		}
-	}
-	for(int i = 0; i<= strlen(line2); i++){
-		char c = line2[i];
-		if(c == '\n'){
-			line2[i] = ':';
-			line2[i+1] = ' ';
-			break;
-		}
-	}
     free(line1); free(line2);
   }
 

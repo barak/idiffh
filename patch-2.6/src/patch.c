@@ -34,10 +34,6 @@
 #include <util.h>
 #include <version.h>
 #include <xalloc.h>
-#include <sys/types.h>
-#include <regex.h>
-#include <stdio.h>
-
 
 /* procedures */
 
@@ -1456,16 +1452,9 @@ patch_match (LINENUM base, LINENUM offset,
     register LINENUM pat_lines = pch_ptrn_lines () - suffix_fuzz;
     size_t size;
     register char const *p;
-    register char const *q;
-   
-	
+
     for (iline=base+offset+prefix_fuzz; pline <= pat_lines; pline++,iline++) {
 	p = ifetch (iline, offset >= 0, &size);
- 	
-	/* Execute regular expression */
-	
-
-	
 	if (canonicalize) {
 	    if (!similar(p, size,
 			 pfetch(pline),
@@ -1475,10 +1464,7 @@ patch_match (LINENUM base, LINENUM offset,
 	else if (size != pch_line_len (pline)
 		 || memcmp (p, pfetch (pline), size) != 0)
 	    return false;
-	
     }
-	
-	
     return true;
 }
 

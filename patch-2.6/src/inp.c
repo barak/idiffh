@@ -30,7 +30,6 @@
 #define XTERN
 #include <inp.h>
 
-
 /* Input-file-with-indexable-lines abstract type */
 
 static char *i_buffer;			/* plan A buffer */
@@ -436,7 +435,6 @@ ifetch (LINENUM line, bool whichbuf, size_t *psize)
     if (using_plan_a) {
 	p = i_ptr[line];
 	*psize = i_ptr[line + 1] - p;
-	
 	return p;
     } else {
 	LINENUM offline = line % lines_per_buf;

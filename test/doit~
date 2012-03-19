@@ -4,11 +4,10 @@ set -e
 set -v
 
 
-for f in a a1 a2; do
+for f in b b1 b2; do
     ../separate <$f >$f.tok
 done
 
-../idiffh a.tok a1.tok > a1.patch || true
-../idiffh a.tok a2.tok > a2.patch || true
-patch -l a2.tok -i a1.patch -o a12.tok
-../rebuild < a12.tok > a12
+../idiffh b.tok b1.tok > b1.patch || true
+patch -l b2.tok -i b1.patch -o b12.tok
+../rebuild < b12.tok > b12
