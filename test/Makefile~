@@ -1,0 +1,32 @@
+all: test
+.PHONY: all test
+
+test: b12
+test: c12
+
+%.tok: %
+	../separate <$< >$@
+
+b1.patch: b.tok b1.tok
+	../idiffh $^ > $@ || true
+
+b2.patch: b.tok b2.tok
+	../idiffh $^ > $@ || true
+
+c1.patch: c.tok c1.tok
+	../idiffh $^ > $@ || true
+
+c2.patch: c.tok c2.tok
+	../idiffh $^ > $@ || true
+
+b12.tok: b2.tok b1.patch
+	patch -l b2.tok -i b1.patch -o $@
+
+c12.tok: c2.tok c1.patch
+	patch -l c2.tok -i c1.patch -o $@
+
+b12: b12.tok
+	../rebuild < $< > $@
+
+c12: c12.tok
+	../rebuild < $< > $@

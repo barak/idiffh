@@ -91,10 +91,6 @@ main (int argc, char *argv[])
 	else if(ch == ':'){
 
 	}
-	
-	else if(ch == '%'){
-
-	}
 
 	else if(ch == '3' && temp == '%'){
 

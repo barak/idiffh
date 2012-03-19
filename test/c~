@@ -54,21 +54,12 @@ main (int argc, char *argv[])
   char temp;
   int i = 0;
   int ch;
-
   while ((ch = getchar ()) != EOF)
     {
 #ifndef NDEBUG
       fprintf (stderr, "(%c)", ch);
 #endif
       if (ch == '\t' && (isalpha (temp)))
-	{
-	  putss (": ");
-	  putss ("%9");
-	}
-      else if (ch == ' ' && temp == '\t'){
-	  putss ("%32");
-	}
-      else if (ch == '\t' && (!(isalpha (temp))) && (temp != ' '))
 	{
 	  putss (": ");
 	  putss ("%9");
@@ -84,7 +75,7 @@ main (int argc, char *argv[])
 	  putchar ('\n');
 
 	}
-      else if (!(isalpha (temp)) && (temp != ' ') && ch == '\n')
+      else if (!(isalpha (temp)) && ch == '\n')
 	{
 	  putss (": ");
 	  putss ("%13");
@@ -105,30 +96,11 @@ main (int argc, char *argv[])
 	  putchar ('\n');
 
 	}
-      else if (ch == '\t')
-	{
-	  putss ("%9");
-	}
- 	else if (temp == '\t' && isalpha (ch))
-	{
-	  putchar ('\n');
-	  putchar (ch);
-	}
-      else if (temp == '\t' && (!isalpha (ch) && (ch != ' ')))
-	{
-	   putchar ('\n');
-	  putchar (ch);
-	}
       else if (temp == '\n' && isalpha (ch))
 	{
 	  putchar (ch);
 	}
-	else if(temp == '\n' && ch == ' ')
-	{
-	  putss (": ");
-	  putss ("%32");
-	}
-      else if (temp == '\n' && (!isalpha (ch)) && (ch != ' '))
+      else if (temp == '\n' && (!isalpha (ch)))
 	{
 	  putchar (ch);
 	}
@@ -137,10 +109,9 @@ main (int argc, char *argv[])
 	  putchar ('\n');
 	  putchar (ch);
 	}
-
 	
 
-      else if ((!(isalpha (temp))) && (temp != ' ') && (isalpha (ch)))
+      else if ((!(isalpha (temp))) && (isalpha (ch)))
 	{
 	  if (temp == ':'){
 	  putchar(':');
@@ -167,23 +138,11 @@ main (int argc, char *argv[])
 	  putss (": ");
 	  putss ("%32");
 	}
-	else if ((isalpha (temp)) && ch == ' ')
-	{
-	  putss (": ");
-	  putss ("%32");
-
-	}
-	else if ((!(isalpha (temp))) && (temp != ' ') && ch == ' ')
-	{
-	  putss (": ");
-	  putss ("%32");
-
-	}
       else if (ch == ' ')
 	{
 	  putss ("%32");
 	}
-      else if ((!(isalpha (ch))) && (ch != ' ') && temp == ' ')
+      else if ((!(isalpha (ch))) && temp == ' ')
 	{
 	  putchar ('\n');
 	  putchar (ch);
@@ -191,13 +150,13 @@ main (int argc, char *argv[])
 
 	}
 
-      else if ((isalpha (temp)) && (!(isalpha (ch))) && (ch != ' '))
+      else if ((isalpha (temp)) && (!(isalpha (ch))))
 	{
 	  putchar ('\n');
 	  putchar (ch);
 
 	}
-      else if (!(isalpha (temp)) && (temp != ' ') && (!(isalpha (ch))) && (ch != ' '))
+      else if (!(isalpha (temp)) && (!(isalpha (ch))))
 	{
 	  if (temp == ':'){
 	  putchar(':');

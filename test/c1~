@@ -54,37 +54,28 @@ main (int argc, char *argv[])
   char temp;
   int i = 0;
   int ch;
-
   while ((ch = getchar ()) != EOF)
     {
 #ifndef NDEBUG
       fprintf (stderr, "(%c)", ch);
 #endif
-      if (ch == '\t' && (isalpha (temp)))
+      if (ch == '\t' && (isalpha1 (temp)))
 	{
 	  putss (": ");
 	  putss ("%9");
 	}
-      else if (ch == ' ' && temp == '\t'){
-	  putss ("%32");
-	}
-      else if (ch == '\t' && (!(isalpha (temp))) && (temp != ' '))
-	{
-	  putss (": ");
-	  putss ("%9");
-	}
-      else if (i == 0 && (isalpha (ch)))
+      else if (i == 0 && (isalpha1 (ch)))
 	{
 	  putchar (ch);
 	}
-      else if ((isalpha (temp)) && ch == '\n')
+      else if ((isalpha1 (temp)) && ch == '\n')
 	{
 	  putss (": ");
 	  putss ("%13");
 	  putchar ('\n');
 
 	}
-      else if (!(isalpha (temp)) && (temp != ' ') && ch == '\n')
+      else if (!(isalpha1 (temp)) && ch == '\n')
 	{
 	  putss (": ");
 	  putss ("%13");
@@ -92,7 +83,7 @@ main (int argc, char *argv[])
 
 	}
 
-      else if (temp == ' ' && ch == '\n')
+      else if (  == ' ' && ch == '\n')
 	{
 	  putss ("%13");
 	  putchar ('\n');
@@ -105,42 +96,22 @@ main (int argc, char *argv[])
 	  putchar ('\n');
 
 	}
-      else if (ch == '\t')
+      else if (temp == '\n' && isalpha1 (ch))
 	{
-	  putss ("%9");
+	  putchar (ch);
 	}
- 	else if (temp == '\t' && isalpha (ch))
+      else if (temp == '\n' && (!isalpha1 (ch)))
+	{
+	  putchar (ch);
+	}
+      else if (temp == ' ' && (isalpha1 (ch)))
 	{
 	  putchar ('\n');
 	  putchar (ch);
 	}
-      else if (temp == '\t' && (!isalpha (ch) && (ch != ' ')))
-	{
-	   putchar ('\n');
-	  putchar (ch);
-	}
-      else if (temp == '\n' && isalpha (ch))
-	{
-	  putchar (ch);
-	}
-	else if(temp == '\n' && ch == ' ')
-	{
-	  putss (": ");
-	  putss ("%32");
-	}
-      else if (temp == '\n' && (!isalpha (ch)) && (ch != ' '))
-	{
-	  putchar (ch);
-	}
-      else if (temp == ' ' && (isalpha (ch)))
-	{
-	  putchar ('\n');
-	  putchar (ch);
-	}
-
 	
 
-      else if ((!(isalpha (temp))) && (temp != ' ') && (isalpha (ch)))
+      else if ((!(isalpha1 (temp))) && (isalpha1 (ch)))
 	{
 	  if (temp == ':'){
 	  putchar(':');
@@ -151,39 +122,27 @@ main (int argc, char *argv[])
 	  putchar ('\n');
 	  putchar (ch);
 	}
-      else if (isalpha (ch))
+      else if (isalpha1 (ch))
 	{
 	  putchar (ch);
 	}
 
-      else if ((isalpha (temp)) && ch == ' ')
+      else if ((isalpha1 (temp)) && ch == ' ')
 	{
 	  putss (": ");
 	  putss ("%32");
 
 	}
-      else if ((!(isalpha (temp))) && temp != ' ' && ch == ' ')
+      else if ((!(isalpha1 (temp))) && temp != ' ' && ch == ' ')
 	{
 	  putss (": ");
 	  putss ("%32");
-	}
-	else if ((isalpha (temp)) && ch == ' ')
-	{
-	  putss (": ");
-	  putss ("%32");
-
-	}
-	else if ((!(isalpha (temp))) && (temp != ' ') && ch == ' ')
-	{
-	  putss (": ");
-	  putss ("%32");
-
 	}
       else if (ch == ' ')
 	{
 	  putss ("%32");
 	}
-      else if ((!(isalpha (ch))) && (ch != ' ') && temp == ' ')
+      else if ((!(isalpha1 (ch))) && temp == ' ')
 	{
 	  putchar ('\n');
 	  putchar (ch);
@@ -191,13 +150,13 @@ main (int argc, char *argv[])
 
 	}
 
-      else if ((isalpha (temp)) && (!(isalpha (ch))) && (ch != ' '))
+      else if ((isalpha1 (temp)) && (!(isalpha1 (ch))))
 	{
 	  putchar ('\n');
 	  putchar (ch);
 
 	}
-      else if (!(isalpha (temp)) && (temp != ' ') && (!(isalpha (ch))) && (ch != ' '))
+      else if (!(isalpha1 (temp)) && (!(isalpha1 (ch))))
 	{
 	  if (temp == ':'){
 	  putchar(':');
