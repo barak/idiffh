@@ -49,14 +49,13 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  char temp;
-  int i = 0;
+  char temp = 0;
   int ch;
 
   while ((ch = getchar ()) != EOF)
     {
 #ifndef NDEBUG
-      fprintf (stderr, "(%c)", ch);
+     // fprintf (stderr, "(%c)", ch);
 #endif
 	
 	if(ch == '3' && temp == '1'){
@@ -112,6 +111,5 @@ main (int argc, char *argv[])
 		putchar (ch);
 	}
       temp = ch;
-      i++;
     }
 }

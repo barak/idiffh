@@ -33,11 +33,11 @@ usage ()
   fprintf (stderr, "Example: (echo a man, a; echo plan)|rebuild\n");
 }
 
-inline int
+/*inline int
 putss (char *s)
 {
   return fputs (s, stdout);
-}
+}*/
 
 
 int
@@ -49,8 +49,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  char temp;
-  int i = 0;
+  char temp = 0;
   int ch;
 
   while ((ch = getchar ()) != EOF)
@@ -91,6 +90,10 @@ main (int argc, char *argv[])
 	else if(ch == ':'){
 
 	}
+	
+	else if(ch == '%'){
+
+	}
 
 	else if(ch == '3' && temp == '%'){
 
@@ -108,6 +111,5 @@ main (int argc, char *argv[])
 		putchar (ch);
 	}
       temp = ch;
-      i++;
     }
 }

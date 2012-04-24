@@ -41,15 +41,17 @@ static char *fgetline(FILE*);
 static void exception(int failure, const char *fmt, ...);
 static int  checkinsertdelete(const size_t bound, char *line1, char *line2,
 			      FILE *filen, char *direction, size_t *count,
-			      FILE *filem, int whitesapce);
+			      FILE *filem, int whitespace1, int whitespace2);
+static int remove_white(char *line);
+static void remove_whitespace(char *line);
 static void printtempfile(char *ed, size_t count1, size_t count2,
 			  size_t f2count1, size_t f2count2);
 static int  synconnextline(FILE *file1, FILE *file2);
 static void handlechangeline(size_t lcount, size_t f2lcount,
-			     char *line1, char *line2);
+			     char *line1, char *line2, int whitespace1, int whitespace2);
 static void outputremainder(FILE *file1, FILE *file2, char *line1, char *line2,
 			    size_t savedlcount, size_t lcount,
-			    size_t savedf2lcount, size_t f2lcount);
+			    size_t savedf2lcount, size_t f2lcount, int whitespace1, int whitespace2);
 
 /* flags */
 static int bflag= 0;    /* -b */
@@ -160,7 +162,7 @@ int main(int argc, char **argv)
 		      argv[i]);
 	  ex= sscanf(limit, "%u", &bounded);
 	  exception(ex == EOF, usage);
-	  exception(bounded < 100 || bounded > 1000,
+	  exception(bounded < 100 || bounded > 5000,
 		    "limit to readahead supplied with -zNumber cannot be <100 or >1000");
 	  break;
 	 }
@@ -217,7 +219,7 @@ int main(int argc, char **argv)
       ex= fgetpos(file2, &backtrackpoint);     exception(ex != 0, "failed to set backtrack position in %s", argv[f2]);
 
 	
-      if (checkinsertdelete(bounded, line1, line2, file2, ">", &f2lcount, file1, whitespace2)){
+      if (checkinsertdelete(bounded, line1, line2, file2, ">", &f2lcount, file1, whitespace1, whitespace2)){
          printtempfile("a", lcount-1, lcount-1, savedf2lcount, f2lcount-1);
 	}
 	
@@ -229,14 +231,15 @@ int main(int argc, char **argv)
 	/* remember file1 position before we check for deletion */
 	savedlcount= lcount; 
 	ex= fgetpos(file1, &backtrackpoint);   exception(ex != 0, "failed to set backtrack position in %s", argv[f1]);
-	if (checkinsertdelete(bounded, line1, line2, file1, "<", &lcount, file2, whitespace1))
+	if (checkinsertdelete(bounded, line1, line2, file1, "<", &lcount, file2, whitespace1, whitespace2))
            printtempfile("d", savedlcount, lcount-1, savedf2lcount-1, f2lcount-1);
-	else  {
+	else  {	
+	  
 	  /* neither insertion nor deletion as far as we can tell with our given readahead; restore file1 pos */
 	  ex= fsetpos(file1, &backtrackpoint); exception(ex != 0, "failed to restore backtrack position in %s", argv[f1]);
 	  lcount= savedlcount;
 	  /* just declare it a changed line */
-	  handlechangeline(lcount, f2lcount, line1, line2);
+	  handlechangeline(lcount, f2lcount, line1, line2, whitespace1, whitespace2);
 	}
       }
     }
@@ -248,10 +251,10 @@ int main(int argc, char **argv)
   exception(line2 == 0 && !feof(file2), "sorry, looks like out of memory or error reading %s", argv[f2]);
 
   /* flush any remaining c lines */
-  handlechangeline(0, 0, "", "");  
+  handlechangeline(0, 0, "", "", 0, 0);  
 
   /* remaining lines if any - to be added or deleted at end */
-  if (line1 != 0 || line2 != 0) { rv= 1; outputremainder(file1, file2, line1, line2, savedlcount, lcount, savedf2lcount, f2lcount); }
+  if (line1 != 0 || line2 != 0) { rv= 1; outputremainder(file1, file2, line1, line2, savedlcount, lcount, savedf2lcount, f2lcount, whitespace1, whitespace2); }
 
   remove(filetempname1); remove(cfile1tempname); remove(cfile2tempname);
   return rv; 
@@ -265,8 +268,8 @@ int main(int argc, char **argv)
 /*
  * One file has more lines than the other - output a or d lines as appropriate
  */
-static void outputremainder(FILE *file1, FILE *file2, char *line1, char *line2, size_t savedlcount, size_t lcount, size_t savedf2lcount, size_t f2lcount)
-{
+static void outputremainder(FILE *file1, FILE *file2, char *line1, char *line2, size_t savedlcount, size_t lcount, size_t savedf2lcount, size_t f2lcount, int whitespace1, int whitespace2)
+{	
   char *line= (line1 == 0) ? line2 : line1; int ex;
   errno= 0;
   temp= fopen(filetempname1, "w"); exception(temp == 0, "can't open temporary file for writing: %s", filetempname1);
@@ -291,7 +294,7 @@ static void outputremainder(FILE *file1, FILE *file2, char *line1, char *line2, 
  * if not consecutive, flush current and restart batch
  * if called as handlechangeline(0,0,"","") it is just to flush the batch
  */
-static void handlechangeline(size_t lcount, size_t f2lcount, char *line1, char *line2)
+static void handlechangeline(size_t lcount, size_t f2lcount, char *line1, char *line2, int whitespace1, int whitespace2 )
 {
   static size_t firstl1= 0, firstl2= 0, lastl1= 0, lastl2= 0; int ex;
   errno= 0;
@@ -300,7 +303,26 @@ static void handlechangeline(size_t lcount, size_t f2lcount, char *line1, char *
     firstl1= lcount; lastl1= lcount; firstl2= f2lcount; lastl2= f2lcount;
     tempc1= fopen(cfile1tempname, "w+"); exception(tempc1 == 0, "failed to open temp file: %s", cfile1tempname);
     tempc2= fopen(cfile2tempname, "w+"); exception(tempc2 == 0, "failed to open temp file: %s", cfile2tempname);
-
+     if( whitespace1 == 1){
+      for(int i = 0; i<= strlen(line1); i++){
+		char c = line1[i];
+		if(c == '\n'){
+			line1[i] = ':';
+			line1[i+1] = ' ';
+			break;
+		}
+	  }
+	}
+      if( whitespace2 == 1){
+	  for(int i = 0; i<= strlen(line2); i++){
+		char c = line2[i];
+		if(c == '\n'){
+			line2[i] = ':';
+			line2[i+1] = ' ';
+			break;
+		}
+	   }
+	}
     fprintf(tempc1, "< %s", line1); fprintf(tempc2, "> %s", line2);
     exception(errno != 0, "sorry looks like I/O failure handling a c line");
     return;
@@ -308,6 +330,26 @@ static void handlechangeline(size_t lcount, size_t f2lcount, char *line1, char *
   /* case of consecutive c lines */
   if (lastl1+1 == lcount) {
     ++lastl1; ++lastl2;
+     if( whitespace1 == 1){
+     for(int i = 0; i<= strlen(line1); i++){
+		char c = line1[i];
+		if(c == '\n'){
+			line1[i] = ':';
+			line1[i+1] = ' ';
+			break;
+		}
+	  }
+	}
+      if( whitespace2 == 1){
+	  for(int i = 0; i<= strlen(line2); i++){
+		char c = line2[i];
+		if(c == '\n'){
+			line2[i] = ':';
+			line2[i+1] = ' ';
+			break;
+		}
+	   }
+	}
     fprintf(tempc1, "< %s", line1); fprintf(tempc2, "> %s", line2);
     exception(errno != 0, "sorry looks like I/O failure handling a c line");
     return;
@@ -329,7 +371,7 @@ static void handlechangeline(size_t lcount, size_t f2lcount, char *line1, char *
       ex= fclose(tempc2);  exception(ex != 0, "failed to close temporary file successfully: %s", cfile2tempname);
       firstl1= 0; firstl2= 0; lastl1= 0; lastl2= 0;
       /* recurse to first case  */
-      handlechangeline(lcount, f2lcount, line1, line2);
+      handlechangeline(lcount, f2lcount, line1, line2, whitespace1, whitespace2);
    }
 }
 
@@ -338,11 +380,12 @@ static void handlechangeline(size_t lcount, size_t f2lcount, char *line1, char *
  * returns 1 iff an insertion or deletion, 0 otherwise
  * give up after bound readaheads
  */
-static int checkinsertdelete(const size_t bound, char *line1, char *line2, FILE *filen, char *direction, size_t *count, FILE *filem, int whitespace)
+static int checkinsertdelete(const size_t bound, char *line1, char *line2, FILE *filen, char *direction, size_t *count, FILE *filem, int whitespace1, int whitespace2)
 {
   size_t readahead= 0; int foundline= 1; char *line; int status= 0; int ex;
   errno= 0;
-if(direction[0] == '>' &&  whitespace == 1){
+  int white;
+if(whitespace2 == 1){
 	for(int i = 0; i<= strlen(line2); i++){
 		char c = line2[i];
 		if(c == '\n'){
@@ -352,7 +395,7 @@ if(direction[0] == '>' &&  whitespace == 1){
 		}
 	}
 }
-if(direction[0] == '<' &&  whitespace == 1){
+if (whitespace1 == 1){
 	for(int i = 0; i<= strlen(line1); i++){
 		char c = line1[i];
 		if(c == '\n'){
@@ -369,14 +412,39 @@ if(direction[0] == '<' &&  whitespace == 1){
   do {
     /* try reading ahead to find a line that does match in file-n */
     while (++readahead, 
-          line= fgetline(filen), 
+          line= fgetline(filen),
+	  (white = ((line != 0) ? remove_white(line) : 0)),
+	  remove_whitespace(line1),
+	  remove_whitespace(line2),
           line != 0 && (foundline= comparefunction((direction[0] == '>') ? line1 : line2, line), foundline != 0) && readahead != bound) {
       *count += 1;
+	if(white == 1){
+		for(int i = 0; i<= strlen(line); i++){
+		char c = line[i];
+			if(c == '\n'){
+				line[i] = ':';
+				line[i+1] = ' ';
+				break;
+			}
+		}
+	}
       fputs(line, temp);
       free(line);
     }
     exception(line == 0 && !feof(filen), "sorry, looks like out of memory or error reading file");
-    if (readahead == bound && foundline != 0 && line != 0) fputs(line, temp);
+    if (readahead == bound && foundline != 0 && line != 0){
+      if(white == 1){
+		for(int i = 0; i<= strlen(line); i++){
+		char c = line[i];
+			if(c == '\n'){
+				line[i] = ':';
+				line[i+1] = ' ';
+				break;
+			}
+		}
+	}
+      fputs(line, temp);
+	}
     if (line != 0) {
       *count += 1;
       free(line);
@@ -389,8 +457,37 @@ if(direction[0] == '<' &&  whitespace == 1){
   ex= fclose(temp);  exception(ex != 0, "failed to close temporary file successfully: %s", filetempname1);
   exception(errno != 0, "sorry looks like I/O failure processing a/d chunk");
   return status;
+  
  }
 
+static int remove_white(char *line)
+{
+	int check = 0;
+	 for(int i = 0; i<= strlen(line); i++){
+		char c = line[i];
+		if(c == ':'){
+			line[i] = '\n';
+			line[i+1] = '\0';
+			check = 1;
+			break;
+
+		}
+	}
+	return check;
+}
+
+static void remove_whitespace(char *line)
+{
+	 for(int i = 0; i<= strlen(line); i++){
+		char c = line[i];
+		if(c == ':'){
+			line[i] = '\n';
+			line[i+1] = '\0';
+			break;
+
+		}
+	}
+}	
 
 /* 
  * return 1 iff we can also sync the files
@@ -405,6 +502,8 @@ static int synconnextline(FILE *file1, FILE *file2)
   ex= fgetpos(file1, &backtrackpoint1);   exception(ex != 0, "failed to set backtrack point");
   ex= fgetpos(file2, &backtrackpoint2);   exception(ex != 0, "failed to set backtrack point");
   line1= fgetline(file1); line2= fgetline(file2);
+  remove_whitespace(line1);
+  remove_whitespace(line2);
   if (line1 != 0 && line2 != 0) status= comparefunction(line1, line2) == 0; else status= 1;
   if (line1 != 0) free(line1);
   if (line2 != 0) free(line2);
@@ -420,7 +519,7 @@ static int synconnextline(FILE *file1, FILE *file2)
 static void printtempfile(char *ed, size_t count1, size_t count2, size_t f2count1, size_t f2count2)
 {
   char *line; int ex;
-  handlechangeline(0, 0, "", "");  /* first flush any previous c lines */
+  handlechangeline(0, 0, "", "", 0, 0);  /* first flush any previous c lines */
   errno= 0;
   temp= fopen(filetempname1, "r"); exception(temp == 0, "error opening temporary file for reading: %s", filetempname1);
   if (count1 != count2)  printf("%zu,%zu%s", count1, count2, ed); else printf("%zu%s", count1, ed);

@@ -1,0 +1,86 @@
+1
+0
+.: %13
+1
+1
+.: %13
+q: %13
+Variable: %32
+Argument: %32
+Lists
+:: %32
+<
+stdarg
+.
+h
+>: %13
+Non
+-
+local: %32
+Jumps
+:: %32
+<
+setjmp
+.
+h
+>: %13
+Signals
+:: %32
+<
+signal
+.
+h
+>: %13
+Date: %32
+and: %32
+Time: %32
+Functions
+:: %32
+<
+time
+.
+h
+>: %13
+Implementation
+-
+defined: %32
+Limits
+:: %32
+<
+limits
+.
+h
+>: %32
+and: %32
+<
+float
+.
+h
+>: %13
+Appendix: %32
+C
+:: %32
+Summary: %32
+of: %32
+Changes: %13
+Preface: %13
+Index: %32
+-
+-: %32
+Preface: %32
+to: %32
+the: %32
+first: %32
+edition: %13
+Preface: %13
+The: %32
+computing: %32
+world: %32
+has: %32
+undergone: %32
+a: %32
+revolution: %32
+since: %32
+the: %32
+publication: %32
+of: %32

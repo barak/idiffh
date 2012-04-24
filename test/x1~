@@ -1444,6 +1444,38 @@ spew_output (struct outstate *outstate, struct stat *st)
       }
 
     return true;
+no dont spew the output
+no dont spew the output
+
+no dont spew the output
+vno dont spew the output
+no dont spew the output
+no dont spew the output
+no dont spew the output
+!!!!!!!!!!!!!!!!!!!!
+no dont spew the output
+no dont spew the output
+no dont spew the output
+,,,no dont spew the output,,no dont spew the output,,no dont spew the output
+no dont spew the output
+no dont spew the output
+no don4t spew the output
+no dont spew the output
+no dont spew5 the output
+no dont spew the output
+no dont  spew the output
+no dont spew the output
+no dont spew sthe output
+no dont spew the output
+no dont spew the  output
+no dont spew the output
+no dont spew the output
+no dont spew the output
+no dont spew the output
+no dont spew the output
+no dont spew the output
+no dont spew the output
+no dont spew the output
 }
 
 /* Does the patch pattern match at line base+offset? */
@@ -1479,23 +1511,21 @@ bool
 similar (register char const *a, register size_t alen,
 	 register char const *b, register size_t blen)
 {
-  regex_t regex;
-  int reti;
-  int count = 1;
-  int count1 = 1;
-  char temp = 0;
-  char msgbuf[100];
-  regmatch_t pmatch[2];
-  register char  *c = a;
-  register char  *d = b;
-  int cnum = 0;
-  int dnum = 0;
+  //regex_t regex;
+  //int reti;
+  int count = 0;
+  //char msgbuf[100];
+  //regmatch_t pmatch[2];
+  //register char  *c = a;
+  //register char  *d = b;
+  //int cnum = 0;
+ // int dnum = 0;
  
  
    /* Ignore presence or absence of trailing newlines.  */
-  //alen  -=  alen && a[alen - 1] == '\n';
-  //blen  -=  blen && b[blen - 1] == '\n';
-	 reti = regcomp(&regex, ": %", REG_EXTENDED); 
+  alen  -=  alen && a[alen - 1] == '\n';
+  blen  -=  blen && b[blen - 1] == '\n';
+/*	 reti = regcomp(&regex, ": %", REG_EXTENDED); 
         if( reti ){ fprintf(stderr, "Could not compile regex\n"); exit(1); }
    
 	reti = regexec(&regex, c, 2, pmatch, 0);
@@ -1522,14 +1552,14 @@ similar (register char const *a, register size_t alen,
 	
 	regfree(&regex);
        
- 
+ */
 	 
 
 
-   /*for (;;)
+   for (;;)
     {
 	
-	if (!blen || (*d == ':'))
+	if (!blen || ((*d == ':') && count!=0))
 	   {
 	
 	    while(blen && (*d != '\n'))
@@ -1549,8 +1579,8 @@ similar (register char const *a, register size_t alen,
 	return false;
 		
       else
-	alen--, blen--;
-      temp = *b;	
+	alen--, blen--;	
+     count++;
     }
 
  /* for (;;)

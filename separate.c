@@ -51,7 +51,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  char temp;
+  char temp = 0;
   int i = 0;
   int ch;
 
@@ -60,23 +60,37 @@ main (int argc, char *argv[])
 #ifndef NDEBUG
       fprintf (stderr, "(%c)", ch);
 #endif
-      if (ch == '\t' && (isalpha (temp)))
+
+     if (i == 0 && ((isalpha (ch))))
+	{
+	  putchar (ch);
+	}
+     else if (i == 0 && (!(isalpha (ch))) && ch != ' ' && ch !='\t' && ch !='\n')
+	{
+	  putchar (ch);
+	}
+
+
+      else if (ch == '\t' && (isalpha (temp)))
 	{
 	  putss (": ");
 	  putss ("%9");
 	}
+
       else if (ch == ' ' && temp == '\t'){
 	  putss ("%32");
 	}
+
+      else if(ch == '\t' && temp == '\t'){
+	  putss ("%9");
+	}
+
       else if (ch == '\t' && (!(isalpha (temp))) && (temp != ' '))
 	{
 	  putss (": ");
 	  putss ("%9");
 	}
-      else if (i == 0 && (isalpha (ch)))
-	{
-	  putchar (ch);
-	}
+
       else if ((isalpha (temp)) && ch == '\n')
 	{
 	  putss (": ");
@@ -214,7 +228,7 @@ main (int argc, char *argv[])
 	{
 	  putchar (ch);
 	}
-
+	
       temp = ch;
       i++;
     }

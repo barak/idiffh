@@ -1184,7 +1184,7 @@ configure:9934: $? = 0
 configure:9956: result: yes
 configure:9965: checking for _doprnt
 configure:10021: gcc -std=gnu99 -o conftest -g -O2   conftest.c  >&5
-/tmp/cck2TF1R.o: In function `main':
+/tmp/ccuWRHjS.o: In function `main':
 /home/darragh/idiffh/patch-2.6/conftest.c:111: undefined reference to `_doprnt'
 collect2: ld returned 1 exit status
 configure:10028: $? = 1
